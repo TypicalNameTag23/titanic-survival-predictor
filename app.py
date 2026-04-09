@@ -11,6 +11,7 @@ from flask_cors import CORS
  
 # Create app instance
 app = Flask(__name__)
+CORS(app)
 
 model_path = os.environ.get("MODEL_FILE", "models/titanic_survivor_model.joblib")
 data_path = os.environ.get("DATA_FILE", "data-sets/titanic.csv")
@@ -18,7 +19,6 @@ data_path = os.environ.get("DATA_FILE", "data-sets/titanic.csv")
 model = joblib.load(model_path)
 
 @app.route("/predict", methods = ["POST"])
-@cross_origin()
 def predict():
     
     #
