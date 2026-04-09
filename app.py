@@ -2,11 +2,17 @@ from flask import Flask, request, jsonify
 import joblib
 import numpy as np
 import os
+import pandas
+import io
+from utils import clean_data
+from utils import train_model
+
  
 # Create app instance
 app = Flask(__name__)
 
 model_path = os.environ.get("MODEL_FILE", "models/titanic_survivor_model.joblib")
+data_path = os.environ.get("DATA_FILE", "data-sets/titanic.csv")
 
 model = joblib.load(model_path)
 
@@ -63,6 +69,32 @@ def predict():
 
     return jsonify({"predicted_survival_chance": round(float(probability), 2),
                     "prediction": int(prediction)})
+
+
+@app.route("/retrain", methods=["POST"])
+def retrain():
+    global model
+
+    if not request.data:
+        return jsonify({"error": "No file provided"}), 400
+    
+    try:
+        raw = request.data.decode("utf-8")
+        new_data_frame = pandas.read_csv(io.StringIO(raw))
+    except Exception as e:
+        return jsonify({"error": f"Could not parse request body as CSV: {e}"}), 400
+
+    existing_data_frame = pandas.read_csv(data_path)
+    data_frame = pandas.concat([existing_data_frame, new_data_frame], ignore_index = True)
+
+    data_frame = clean_data(data_frame)
+
+    model = train_model(data_frame)
+
+    joblib.dump(model, model_path)
+    data_frame.to_csv(data_path, index = False)
+
+    return jsonify({"message": f"Model retrained on {len(data_frame)} rows"})
 
 
 
