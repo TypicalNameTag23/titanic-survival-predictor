@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("filename", help = "Path to CSV or SQLite .db file")
 parser.add_argument("--split", action = "store_true", help = "Split training data into train / test sets to evaluate accuracy during execution")
 parser.add_argument("--estimators", type = int, default = 100, help = "Number of estimator in the random forest classifier")
-parser.add_argument("--output-file", default = "titanic_survivor_model.joblib", help = "Path to save the trained model")
+parser.add_argument("--output-file", default = "models/titanic_survivor_model.joblib", help = "Path to save the trained model")
 args = parser.parse_args()
 filename = args.filename
 

@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Parse command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("model_file", help = "Path to joblib model file")
+parser.add_argument("--model-file", default = "models/titanic_survivor_model.joblib", help = "Path to joblib model file")
 args = parser.parse_args()
 
 model = joblib.load(args.model_file)
@@ -66,6 +66,8 @@ def predict():
 
     return jsonify({"predicted_survival_chance": round(float(probability), 2),
                     "prediction": int(prediction)})
+
+
 
 if __name__ == "__main__":
     app.run()
